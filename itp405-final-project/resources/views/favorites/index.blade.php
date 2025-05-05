@@ -15,7 +15,7 @@
             return collect(range(1, $round->arrows_per_end))->map(function ($i) use ($entry) {
                 return $entry["arrow{$i}_score"];
             });
-        })->filter(); // remove nulls
+        })->filter();
 
         $total = $scores->sum();
         $average = $scores->count() > 0 ? number_format($total / $scores->count(), 2) : '0.00';

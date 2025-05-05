@@ -10,7 +10,7 @@ class RoundController extends Controller
 {
     public function index(Request $request)
     {
-    $query = \App\Models\Round::where('user_id', auth()->id());
+    $query = Round::where('user_id', auth()->id());
 
     if ($request->filled('bow_type')) {
         $query->where('bow_type', $request->input('bow_type'));
@@ -24,8 +24,7 @@ class RoundController extends Controller
         $query->where('is_outdoor', $request->input('is_outdoor'));
     }
 
-    // Sorting
-    $sortOrder = $request->input('sort', 'desc'); // default to newest first
+    $sortOrder = $request->input('sort', 'desc');
     $query->orderBy('created_at', $sortOrder);
 
     return view('rounds.index', [
@@ -80,7 +79,6 @@ public function show(Round $round)
         ];
     });
 
-    // For totals, use raw values (to ensure summing works correctly)
     $rawScores = [];
     $goldCount = 0;
 

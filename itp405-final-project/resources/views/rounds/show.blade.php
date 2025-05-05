@@ -32,13 +32,11 @@
           <td>{{ $entry['end_number'] }}</td>
           @php $sum = 0; @endphp
           @foreach ($entry['scores'] as $score)
-  <td>
-    {{ is_numeric($score) ? $score : '10' }}
-    @php $sum += is_numeric($score) ? $score : 0; @endphp
-  </td>
-@endforeach
-
-
+          <td>
+            {{ is_numeric($score) ? $score : '10' }}
+            @php $sum += is_numeric($score) ? $score : 0; @endphp
+          </td>
+          @endforeach
           <td><strong>{{ $sum }}</strong></td>
         </tr>
       @endforeach
