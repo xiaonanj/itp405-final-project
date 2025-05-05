@@ -18,7 +18,9 @@ class ScoreEntryController extends Controller
             $scores = [];
             for ($i = 1; $i <= $round->arrows_per_end; $i++) {
                 $score = $entry->{"arrow{$i}_score"};
-                if ($score === 0) {
+                if ($score === 10 && $entry->arrow1_score === 10) {
+                    $score = 10;
+                } elseif ($score === 0) {
                     $score = 'M';
                 }
                 $scores[] = $score;
@@ -62,7 +64,6 @@ class ScoreEntryController extends Controller
     
             for ($i = 0; $i < count($arrowScores); $i++) {
                 $score = $arrowScores[$i];
-                if ($score === 'X') $score = 10;
                 if ($score === 'M') $score = 0;
                 $data["arrow" . ($i + 1) . "_score"] = (int) $score;
             }

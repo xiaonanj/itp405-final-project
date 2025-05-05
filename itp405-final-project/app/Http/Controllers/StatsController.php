@@ -27,7 +27,7 @@ class StatsController extends Controller
 
         $entries = $query->with('round')->get();
 
-        $allScores = ['M', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'X'];
+        $allScores = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
         $scoreCounts = array_fill_keys($allScores, 0);
 
         $totalArrows = 0;
@@ -46,17 +46,13 @@ class StatsController extends Controller
                 $totalArrows++;
                 $totalScore += $score;
 
-                if ($score === 10 && $i === 1 && $entry->arrow1_score === 10) {
-                    $label = 'X';
-                } elseif ($score === 0) {
-                    $label = 'M';
-                } else {
-                    $label = (string)$score;
+                $label = $score === 0 ? 'M' : (string)$score;
+
+                if (isset($scoreCounts[$label])) {
+                    $scoreCounts[$label]++;
                 }
 
-                $scoreCounts[$label]++;
-
-                if ($label === 'X' || $label === '10') {
+                if ($label === '10') {
                     $goldCount++;
                 }
 
@@ -75,7 +71,7 @@ class StatsController extends Controller
             'average' => $average,
             'goldCount' => $goldCount,
             'hitCount' => $hitCount,
-            'filters' => $request->only(['bow_type', 'target_distance', 'is_outdoor'])
+            'filters' => $request->only(['bow_type', 'target_distance', 'is_outdoor']),
         ]);
     }
 }

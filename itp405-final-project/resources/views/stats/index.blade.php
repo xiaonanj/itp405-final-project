@@ -50,18 +50,17 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script>
-const allLabels = ['X', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1', 'M'];
+const allLabels = ['10', '9', '8', '7', '6', '5', '4', '3', '2', '1'];
 const scoreCounts = @json($scoreCounts);
 const data = allLabels.map(label => scoreCounts[label] ?? 0);
 const total = {{ $totalArrows }};
 
 const scoreColors = {
-  'X': '#FFD700', '10': '#FFD700', '9': '#FFD700',
+  '10': '#FFD700', '9': '#FFD700',
   '8': '#DC3545', '7': '#DC3545',
   '6': '#0D6EFD', '5': '#0D6EFD',
   '4': '#212529', '3': '#212529',
   '2': '#F8F9FA', '1': '#F8F9FA',
-  'M': '#28A745'
 };
 const backgroundColors = allLabels.map(label => scoreColors[label] || '#ccc');
 

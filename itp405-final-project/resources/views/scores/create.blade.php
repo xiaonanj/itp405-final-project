@@ -17,62 +17,60 @@
     <strong>Average:</strong> <span id="averageScore">0.00</span>
   </div>
 
-  <div id="scoreError" class="alert alert-danger d-none"></div>
   @if (session('error'))
     <div class="alert alert-danger">{{ session('error') }}</div>
   @endif
+  @if (session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+  @endif
+
+  <div id="scoreError" class="alert alert-danger d-none"></div>
 
   <form method="POST" action="{{ route('scores.store', $round) }}" id="scoreForm">
     @csrf
     <div id="scoreDisplay" class="mb-4"></div>
     <input type="hidden" name="scores_json" id="scoresJsonInput">
-    <button class="btn btn-success mt-2">Submit All Scores</button>
+    <button class="btn btn-success mt-2">Save Scores</button>
   </form>
 
   <hr>
 
-  <div class="d-flex flex-wrap gap-2 mb-3">
-    @foreach (['X', 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 'M'] as $score)
-      <button type="button" class="btn btn-outline-primary score-btn" data-score="{{ $score }}">{{ $score }}</button>
-    @endforeach
-    <button type="button" class="btn btn-outline-danger" id="undoBtn">Undo</button>
-  </div>
+  <div class="d-flex flex-wrap gap-2 mb-3" id="scoreKeypad"></div>
 
   <hr>
-  <h5>Comments</h5>
 
   <h4 class="mt-4">Comments</h4>
-@if ($round->comments->isEmpty())
-  <p>No comments yet. Be the first to comment!</p>
-@else
-  <ul class="list-group mt-3 mb-4">
-    @foreach ($round->comments->sortByDesc('created_at') as $comment)
-      <li class="list-group-item">
-        <strong>{{ $comment->user->name }}</strong> 
-        <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
-        <p>{{ $comment->body }}</p>
+  @if ($round->comments->isEmpty())
+    <p>No comments yet. Be the first to comment!</p>
+  @else
+    <ul class="list-group mt-3 mb-4">
+      @foreach ($round->comments->sortByDesc('created_at') as $comment)
+        <li class="list-group-item">
+          <strong>{{ $comment->user->name }}</strong> 
+          <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+          <p>{{ $comment->body }}</p>
 
-        @if (auth()->id() === $comment->user_id)
-          <a href="{{ route('comments.edit', [$round, $comment]) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-          <form action="{{ route('comments.destroy', [$round, $comment]) }}" method="POST" class="d-inline">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this comment?')">Delete</button>
-          </form>
-        @endif
-      </li>
-    @endforeach
-  </ul>
-@endif
+          @if (auth()->id() === $comment->user_id)
+            <a href="{{ route('comments.edit', [$round, $comment]) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+            <form action="{{ route('comments.destroy', [$round, $comment]) }}" method="POST" class="d-inline">
+              @csrf
+              @method('DELETE')
+              <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this comment?')">Delete</button>
+            </form>
+          @endif
+        </li>
+      @endforeach
+    </ul>
+  @endif
 
-<form method="POST" action="{{ route('comments.store', $round) }}">
-  @csrf
-  <div class="mb-3">
-    <label for="body" class="form-label">Add a comment</label>
-    <textarea name="body" class="form-control" rows="3" placeholder="Write something..." required></textarea>
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+  <form method="POST" action="{{ route('comments.store', $round) }}">
+    @csrf
+    <div class="mb-3">
+      <label for="body" class="form-label">Add a comment</label>
+      <textarea name="body" class="form-control" rows="3" placeholder="Write something..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
 
   <style>
     .score-circle {
@@ -103,18 +101,16 @@
     let selected = null;
 
     function scoreToNumber(s) {
-      if (s === 'X') return 10;
       if (s === 'M') return 0;
       return parseInt(s);
     }
 
     function getColorClass(score) {
-      if (score === 'X' || score == 10 || score == 9) return 'bg-yellow';
+      if (score == 10 || score == 9) return 'bg-yellow';
       if (score == 8 || score == 7) return 'bg-red';
       if (score == 6 || score == 5) return 'bg-blue';
       if (score == 4 || score == 3) return 'bg-black';
       if (score == 2 || score == 1) return 'bg-white';
-      if (score == 0 || score === 'M') return 'bg-green';
       return 'bg-secondary';
     }
 
@@ -172,6 +168,38 @@
       updateTotals();
     }
 
+    function renderKeypad() {
+      const keypad = document.getElementById('scoreKeypad');
+      keypad.innerHTML = '';
+      const scores = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+
+      scores.forEach(score => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `btn score-btn ${getColorClass(score)} me-1 mb-1`;
+        btn.dataset.score = score;
+        btn.innerText = score;
+
+        if (getColorClass(score) === 'bg-white') {
+          btn.style.color = 'black';
+          btn.style.border = '1px solid #ccc';
+        } else {
+          btn.style.color = 'white';
+        }
+
+        btn.addEventListener('click', () => addScore(score));
+        keypad.appendChild(btn);
+      });
+
+      const undoBtn = document.createElement('button');
+      undoBtn.type = 'button';
+      undoBtn.className = 'btn btn-outline-danger ms-2';
+      undoBtn.innerText = 'Undo';
+      undoBtn.id = 'undoBtn';
+      undoBtn.addEventListener('click', undoLast);
+      keypad.appendChild(undoBtn);
+    }
+
     function addScore(score) {
       if (selected) {
         allEnds[selected.endIndex][selected.arrowIndex] = score;
@@ -196,13 +224,6 @@
       renderScores();
     }
 
-    document.querySelectorAll('.score-btn').forEach(btn => {
-      btn.addEventListener('click', () => addScore(btn.dataset.score));
-    });
-
-    document.getElementById('undoBtn').addEventListener('click', undoLast);
-
-    // Prevent submission if any end has fewer than required arrows
     document.getElementById('scoreForm').addEventListener('submit', function (e) {
       const errorBox = document.getElementById('scoreError');
       errorBox.classList.add('d-none');
@@ -217,5 +238,6 @@
     });
 
     renderScores();
+    renderKeypad();
   </script>
 @endsection

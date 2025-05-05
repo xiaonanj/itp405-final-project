@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
-    protected $fillable = ['user_id', 'body', 'commentable_id', 'commentable_type'];
+    protected $fillable = ['user_id', 'body', 'round_id'];
 
     public function user()
     {
@@ -15,12 +15,8 @@ class Comment extends Model
 
     public function round()
     {
-        return $this->belongsTo(Round::class);
+        return $this->belongsTo(related: Round::class);
     }
 
-    public function commentable()
-{
-    return $this->morphTo();
-}
 
 }
