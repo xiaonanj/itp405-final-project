@@ -21,4 +21,11 @@
     </div>
     <input type="submit" value="Register" class="btn btn-primary">
   </form>
+  @auth
+  <form method="POST" action="{{ route('auth.logout') }}">
+    @csrf
+    <button type="submit" class="btn btn-link nav-link">Logout</button>
+  </form>
+@endauth
+
 @endsection
