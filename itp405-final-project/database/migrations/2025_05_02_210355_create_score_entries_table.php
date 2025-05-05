@@ -11,16 +11,20 @@ return new class extends Migration
      */
     public function up(): void
 {
-    Schema::table('score_entries', function (Blueprint $table) {
-        $table->string('arrow1_score', 2)->change();
-        $table->string('arrow2_score', 2)->change();
-        $table->string('arrow3_score', 2)->change();
-        $table->string('arrow4_score', 2)->nullable()->change();
-        $table->string('arrow5_score', 2)->nullable()->change();
-        $table->string('arrow6_score', 2)->nullable()->change();
+    Schema::create('score_entries', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('round_id')->constrained()->onDelete('cascade');
+        $table->integer('end_number');
+        $table->integer('arrow1_score');
+        $table->integer('arrow2_score');
+        $table->integer('arrow3_score');
+        $table->integer('arrow4_score')->nullable();
+        $table->integer('arrow5_score')->nullable();
+        $table->integer('arrow6_score')->nullable();
+        $table->timestamps();
     });
 }
-
+    
 
     /**
      * Reverse the migrations.

@@ -32,14 +32,13 @@
           <td>{{ $entry['end_number'] }}</td>
           @php $sum = 0; @endphp
           @foreach ($entry['scores'] as $score)
-            <td>
-              {{ $score }}
-              @php
-                if (is_numeric($score)) $sum += $score;
-                elseif ($score === 'X') $sum += 10;
-              @endphp
-            </td>
-          @endforeach
+  <td>
+    {{ is_numeric($score) ? $score : '10' }}
+    @php $sum += is_numeric($score) ? $score : 0; @endphp
+  </td>
+@endforeach
+
+
           <td><strong>{{ $sum }}</strong></td>
         </tr>
       @endforeach
@@ -66,7 +65,7 @@
 
 <h4 class="mt-4">Comments</h4>
 @if ($round->comments->isEmpty())
-  <p>No comments yet. Be the first to comment!</p>
+  <p>No comments yet.</p>
 @else
   <ul class="list-group mt-3 mb-4">
     @foreach ($round->comments->sortByDesc('created_at') as $comment)
@@ -88,14 +87,6 @@
   </ul>
 @endif
 
-<form method="POST" action="{{ route('comments.store', $round) }}">
-  @csrf
-  <div class="mb-3">
-    <label for="body" class="form-label">Add a comment</label>
-    <textarea name="body" class="form-control" rows="3" placeholder="Write something..." required></textarea>
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
 
   <a href="{{ route('rounds.index') }}" class="btn btn-secondary mt-3">Back to Rounds</a>
 @endsection
