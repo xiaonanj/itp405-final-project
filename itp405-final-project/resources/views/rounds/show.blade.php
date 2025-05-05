@@ -97,7 +97,5 @@
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
-
-
   <a href="{{ route('rounds.index') }}" class="btn btn-secondary mt-3">Back to Rounds</a>
 @endsection
