@@ -19,18 +19,33 @@
 
         $total = $scores->sum();
         $average = $scores->count() > 0 ? number_format($total / $scores->count(), 2) : '0.00';
+
+        $favoritedAt = $round->pivot->created_at->format('Y-m-d');
       @endphp
 
       <li class="list-group-item">
-        <strong>{{ $round->created_at->format('Y-m-d') }}</strong> |
-        {{ ucfirst($round->session_type) }} |
-        {{ $round->target_type }}
-        {{ $round->target_distance }}m {{ ucfirst($round->bow_type) }} |
-        {{ $round->is_outdoor ? 'Outdoor' : 'Indoor' }} |
-        Total score: {{ $total }} |
-        Average score: {{ $average }}
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong>Favorited:</strong> {{ $favoritedAt }} <br>
+            <strong>Round:</strong> {{ $round->created_at->format('Y-m-d') }} |
+            {{ ucfirst($round->session_type) }} |
+            {{ $round->target_distance }}m {{ ucfirst($round->bow_type) }} |
+            {{ $round->is_outdoor ? 'Outdoor' : 'Indoor' }} <br>
+            <strong>Total:</strong> {{ $total }} |
+            <strong>Average:</strong> {{ $average }}
+          </div>
 
-        <a href="{{ route('rounds.show', $round) }}" class="btn btn-sm btn-outline-secondary float-end">View</a>
+          <div class="d-flex gap-2">
+            <a href="{{ route('rounds.show', $round) }}" class="btn btn-sm btn-outline-secondary">View</a>
+            
+            <form method="POST" action="{{ route('favorites.toggle', $round) }}">
+              @csrf
+              <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this round from favorites?')">
+                Remove
+              </button>
+            </form>
+          </div>
+        </div>
       </li>
     @endforeach
   </ul>

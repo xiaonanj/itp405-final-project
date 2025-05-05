@@ -73,20 +73,11 @@
         <strong>{{ $comment->user->name }}</strong> 
         <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
         <p>{{ $comment->body }}</p>
-
-        @if (auth()->id() === $comment->user_id)
-          <a href="{{ route('comments.edit', [$round, $comment]) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-          <form action="{{ route('comments.destroy', [$round, $comment]) }}" method="POST" class="d-inline">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this comment?')">Delete</button>
-          </form>
-        @endif
       </li>
     @endforeach
   </ul>
 @endif
 
-
-  <a href="{{ route('rounds.index') }}" class="btn btn-secondary mt-3">Back to Rounds</a>
+  <a href="{{ route('scores.create', $round) }}" class="btn btn-primary mt-3">Back to Score Page</a>
+  <a href="{{ route('rounds.index') }}" class="btn btn-secondary mt-3">Back to Home</a>
 @endsection
